@@ -1,5 +1,5 @@
 %% Solar Shower Transient Thermal Model
-% Single-day simulation
+% Single-day simulationb
 % Location: Yellowstone National Park
 
 close all;
@@ -117,7 +117,7 @@ end
 %% Thermal Resistance Network
 
 % PVC thermal conductivity
-k_pipe = 0.19;             % W/(m*K), approximate PVC value
+k_pipe = 0.19;             % W/(m*K), approximate PVC value - Confirm this
 
 % Internal convection coefficient
 h_inside = 35;            % W/(m^2*K), initial assumption
@@ -218,17 +218,12 @@ end
 T_water_freezing = 273.15;
 latent_heat_fusion = 334000; % [J/kg]
 
-% Inside your simulation loop:
+% Inside simulation loop:
 if T_water(i) <= T_water_freezing && m_water > 0
     % If water reaches freezing point, lock temperature at 0C 
     % until latent heat is fully extracted or added
     T_water(i+1) = T_water_freezing;
     
-    % Pipe expansion warning flag
-    if i == 1 || ~exist('burst_warning_logged','var')
-        fprintf('WARNING: Water freezing point reached at hour %.1f! Expansion risk.\n', timeHours(i));
-        burst_warning_logged = true;
-    end
 end
 
 %% Results
