@@ -1,5 +1,5 @@
 %% Solar Shower Transient Thermal Model
-% Single-day simulationb
+% Single-day simulation
 % Location: Yellowstone National Park
 
 close all;
@@ -32,7 +32,7 @@ C_total = m_water*Cp_water + m_pipe*Cp_pipe;
 
 % Surface areas
 A_projected = L * Do;       % Approximate area exposed to sunlight
-A_surface = pi * L * Do;    % Total outside surface area
+A_surface = pi * L * Do;    % Total outside surface area (Assuming sunlight hits entire surface)
 
 %% Solar and Thermal Parameters
 
