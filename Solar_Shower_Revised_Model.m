@@ -21,7 +21,7 @@ close all;
 clear;
 clc;
 
-%% 1. USER SETTINGS
+%% 1. IMPORTING SAM DATA
 
 filename = 'Yellowstone_Data_tmy.csv';
 
@@ -91,7 +91,7 @@ h_wind = @(V) max(5.0, 5.7 + 3.8*max(V,0));
 %% 5. INITIAL CONDITIONS
 
 Ti_K = initial_temperature_C + 273.15;
-target_temperature_K = target_temperature_C + 273.15; %#ok<NASGU>
+target_temperature_K = target_temperature_C + 273.15; 
 
 %% 6. READ THE NSRDB CSV FILE
 
