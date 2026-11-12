@@ -62,58 +62,6 @@ Q_rad = zeros(size(time));
 Q_solar = zeros(size(time));
 G = zeros(size(time));
 
-%% Weather Conditions
-
-G_max = 800;                 % Peak solar irradiance [W/m^2]
-
-sunrise = 6;                 % Sunrise [hours]
-sunset = 18;                 % Sunset [hours]
-
-for i = 1:length(time)
-
-    if timeHours(i) >= sunrise && timeHours(i) <= sunset
-
-        G(i) = G_max*sin(pi*(timeHours(i)-sunrise) ...
-            /(sunset-sunrise));
-
-    else
-
-        G(i) = 0;
-
-    end
-
-end
-
-% Annual average ambient temp ~ 2.5 C, amplitude ~ 15 C
-T_a_mean = 2.5 + 273.15; 
-T_a_amplitude = 15;
-
-for i = 1:length(time)
-    d = dayOfYear(i);
-    current_hour_of_day = mod(timeHours(i), 24);
-    
-    % Seasonal variation + daily thermal swing
-    seasonal_temp = T_a_mean - T_a_amplitude * cos(2 * pi * d / 365);
-    daily_swing = 5 * sin(2 * pi * (current_hour_of_day - 9) / 24); % peak at 3 PM
-    
-    Ta_vector(i) = seasonal_temp + daily_swing;
-end
-
-T_water_freezing = 273.15;
-latent_heat_fusion = 334000; % [J/kg]
-
-% Inside your simulation loop:
-if T_water(i) <= T_water_freezing && m_water > 0
-    % If water reaches freezing point, lock temperature at 0C 
-    % until latent heat is fully extracted or added
-    T_water(i+1) = T_water_freezing;
-    
-    % Pipe expansion warning flag
-    if i == 1 || ~exist('burst_warning_logged','var')
-        fprintf('WARNING: Water freezing point reached at hour %.1f! Expansion risk.\n', timeHours(i));
-        burst_warning_logged = true;
-    end
-end
 
 %% Declination and Latitude Dependence 
 
@@ -229,6 +177,60 @@ for i = 1:length(time)-1
         Q_net_water*dt/(m_water*Cp_water);
 
 end
+
+%% Weather Conditions
+
+G_max = 800;                 % Peak solar irradiance [W/m^2]
+
+sunrise = 6;                 % Sunrise [hours]
+sunset = 18;                 % Sunset [hours]
+
+for i = 1:length(time)
+
+    if timeHours(i) >= sunrise && timeHours(i) <= sunset
+
+        G(i) = G_max*sin(pi*(timeHours(i)-sunrise) ...
+            /(sunset-sunrise));
+
+    else
+
+        G(i) = 0;
+
+    end
+
+end
+
+% Annual average ambient temp ~ 2.5 C, amplitude ~ 15 C
+T_a_mean = 2.5 + 273.15; 
+T_a_amplitude = 15;
+
+for i = 1:length(time)
+    d = dayOfYear(i);
+    current_hour_of_day = mod(timeHours(i), 24);
+    
+    % Seasonal variation + daily thermal swing
+    seasonal_temp = T_a_mean - T_a_amplitude * cos(2 * pi * d / 365);
+    daily_swing = 5 * sin(2 * pi * (current_hour_of_day - 9) / 24); % peak at 3 PM
+    
+    Ta_vector(i) = seasonal_temp + daily_swing;
+end
+
+T_water_freezing = 273.15;
+latent_heat_fusion = 334000; % [J/kg]
+
+% Inside your simulation loop:
+if T_water(i) <= T_water_freezing && m_water > 0
+    % If water reaches freezing point, lock temperature at 0C 
+    % until latent heat is fully extracted or added
+    T_water(i+1) = T_water_freezing;
+    
+    % Pipe expansion warning flag
+    if i == 1 || ~exist('burst_warning_logged','var')
+        fprintf('WARNING: Water freezing point reached at hour %.1f! Expansion risk.\n', timeHours(i));
+        burst_warning_logged = true;
+    end
+end
+
 %% Results
 
 temperature_C = T_water-273.15;
